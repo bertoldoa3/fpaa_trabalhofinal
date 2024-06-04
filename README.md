@@ -5,6 +5,7 @@
  * Ana Vitória Araujo de Souza
  * Iamara Carla Oliveira de Sá 
  * Luis Felipe de Souza Pereira
+ * MayCon Douglas Correa
 
 ## Perguntas e Problemas
  * Algoritmo Guloso 
