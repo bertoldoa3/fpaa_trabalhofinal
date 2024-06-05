@@ -1,0 +1,84 @@
+# Visual Studio
+.vs/
+.vscode/
+*.csproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Asp.Net Scaffolding
+ScaffoldingReadMe.txt
+
+# ASP.NET
+aspnet_client/
+
+# dotnetcore
+project.lock.json
+project.fragment.lock.json
+artifacts/
+bin/
+obj/
+*.dll
+*.exe
+*.app
+*.iso
+*.jar
+*.lib
+*.nupkg
+*.pdb
+*.publish.xml
+*.runtimeconfig.json
+*.stackdump
+*.swp
+*.temp
+*.tmp
+*.trx
+*.user
+*.vscode
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/packages/
+.nuget/repository/
+paket-files/
+.nuget/
+
+# npm
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Rider
+.idea/
+.idea_modules/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+logs/
+*.log
+
+# Crashlytics
+crashlytics-build.properties
+crashlytics.properties
+
+# Resharper
+_ReSharper.Caches
+_ReSharper.*
