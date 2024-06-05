@@ -15,11 +15,6 @@ export type formsProps = {
 }
 
 export const Formulario = (props: formsProps) => {
-    const [pratos, setPratos] = useState(0);
-    const [dias, setDias] = useState(0);
-    const [orcamento, setOrcamento] = useState(0);
-    const [custo, setCusto] = useState<number[]>([]);
-    const [lucro, setLucro] = useState<number[]>([]);
     const [modalAberto, setModalAberto] = useState(false);
     const [cardapios, setCardapios] = useState<Cardapio[]>([]);
 
@@ -58,14 +53,16 @@ export const Formulario = (props: formsProps) => {
     };
 
     const verificaNumeroPratos = useCallback(
-        debounce((value) => {
-            setPratos(value);
-        }, 2000),
-        []
+        debounce((value, cardapioIndex) => {
+            const newCardapios = [...cardapios];
+            newCardapios[cardapioIndex].pratos = value;
+            setCardapios(newCardapios);
+        }, 300),
+        [cardapios]
     );
 
     const renderPratos = (cardapioIndex: number) => {
-        return Array.from({ length: pratos }).map((_, index) => (
+        return Array.from({ length: cardapios[cardapioIndex].pratos }).map((_, index) => (
             <Grid container spacing={2} key={index}>
                 <Grid item xs={6} className={styles.formGroup}>
                     <TextField
@@ -109,7 +106,7 @@ export const Formulario = (props: formsProps) => {
 
     const formCardapio =
         <Formik
-            initialValues={{ pratos, dias, orcamento, pratosInfo: custo.map((c, index) => ({ custo: c, lucro: lucro[index] })) }}
+            initialValues={{ pratos: 0, dias: 0, orcamento: 0 }}
             onSubmit={() => { }}
         >
 
@@ -128,7 +125,6 @@ export const Formulario = (props: formsProps) => {
                                     onChange={(e) => {
                                         const newCardapios = [...cardapios];
                                         newCardapios[index].dias = Number(e.target.value);
-                                        setDias(newCardapios[index].dias);
                                         setCardapios(newCardapios);
                                     }}
                                 />
@@ -144,9 +140,7 @@ export const Formulario = (props: formsProps) => {
                                     onChange={(e) => {
                                         const newCardapios = [...cardapios];
                                         newCardapios[index].pratos = Number(e.target.value);
-                                        setPratos(newCardapios[index].pratos);
-                                        verificaNumeroPratos(e.target.value);
-                                        setCardapios(newCardapios);
+                                        verificaNumeroPratos(e.target.value, index);
                                     }}
                                 />
                             </Grid>
@@ -161,7 +155,6 @@ export const Formulario = (props: formsProps) => {
                                     onChange={(e) => {
                                         const newCardapios = [...cardapios];
                                         newCardapios[index].orcamento = Number(e.target.value);
-                                        setOrcamento(newCardapios[index].orcamento);
                                         setCardapios(newCardapios);
                                     }}
                                 />
