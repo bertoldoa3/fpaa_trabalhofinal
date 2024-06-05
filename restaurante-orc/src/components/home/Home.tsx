@@ -1,22 +1,22 @@
 import React, { useState } from 'react'
 import Cabecalho from '../cabecalho/Cabecalho'
 import { Formulario } from '../formulario/Formulario'
-import { Dados } from '../../type/dados'
+import { Cardapio } from '../../type/Cardapio'
 import { DadosSaida } from '../../type/DadosSaida'
 
 
 const Home = () => {
-    const [dadosEnviar, setDadosEnviar] = useState<Dados | null>(null)
+    const [dadosEnviar, setDadosEnviar] = useState<Cardapio[] | null>(null)
     const [dadosReceberGuloso, setDadosReceberGuloso] = useState<DadosSaida | null>(null)
     const [dadosReceberDinamico, setDadosReceberDinamico] = useState<DadosSaida | null>(null)
 
 
-    const enviarDadosGuloso = async (dados: Dados) => {
-
+    const enviarDadosGuloso = async (dados: Cardapio[]) => {
+        console.log(dados)
     }
 
-    const enviarDadosDinamico = async (dados: Dados) => {
-
+    const enviarDadosDinamico = async (dados: Cardapio[]) => {
+        console.log(dados)
     }
 
     const receberResultadosGuloso = () => {

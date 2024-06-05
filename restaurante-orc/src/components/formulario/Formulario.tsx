@@ -3,14 +3,14 @@ import { Form, Formik } from 'formik';
 import React, { useCallback, useState } from 'react';
 import _, { debounce } from 'lodash';
 import styles from './Formulario.module.scss';
-import { Dados } from '../../type/dados';
+import { Cardapio } from '../../type/Cardapio';
 import ModalResultado from '../modalResultado/ModalResultado';
 import { DadosSaida } from '../../type/DadosSaida';
 
 export type formsProps = {
-    enviarReseultadosGuloso: (dados: Dados) => void;
+    enviarReseultadosGuloso: (dados: Cardapio[]) => void;
     dadosRecebidosGuloso: DadosSaida | null;
-    enviarReseultadosDinamico: (dados: Dados) => void;
+    enviarReseultadosDinamico: (dados: Cardapio[]) => void;
     dadosRecebidosDinamico: DadosSaida | null;
 }
 
@@ -21,6 +21,7 @@ export const Formulario = (props: formsProps) => {
     const [custo, setCusto] = useState<number[]>([]);
     const [lucro, setLucro] = useState<number[]>([]);
     const [modalAberto, setModalAberto] = useState(false);
+    const [cardapios, setCardapios] = useState<Cardapio[]>([]);
 
     const fecharModalGuloso = () => {
         setModalAberto(false);
@@ -29,6 +30,7 @@ export const Formulario = (props: formsProps) => {
     const abrirModalGuloso = () => {
         setModalAberto(true);
     }
+
     const fecharModalDinamico = () => {
         setModalAberto(false);
     }
@@ -37,17 +39,22 @@ export const Formulario = (props: formsProps) => {
         setModalAberto(true);
     }
 
-
-    const handleCustoChange = (index: number, value: number) => {
-        const newCusto = [...custo];
-        newCusto[index] = value;
-        setCusto(newCusto);
+    const handleCustoChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
+        const newCardapios = [...cardapios];
+        if (!newCardapios[cardapioIndex].pratosInfo[pratoIndex]) {
+            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { custo: 0, lucro: 0 };
+        }
+        newCardapios[cardapioIndex].pratosInfo[pratoIndex].custo = value;
+        setCardapios(newCardapios);
     };
 
-    const handleLucroChange = (index: number, value: number) => {
-        const newLucro = [...lucro];
-        newLucro[index] = value;
-        setLucro(newLucro);
+    const handleLucroChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
+        const newCardapios = [...cardapios];
+        if (!newCardapios[cardapioIndex].pratosInfo[pratoIndex]) {
+            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { custo: 0, lucro: 0 };
+        }
+        newCardapios[cardapioIndex].pratosInfo[pratoIndex].lucro = value;
+        setCardapios(newCardapios);
     };
 
     const verificaNumeroPratos = useCallback(
@@ -57,115 +64,160 @@ export const Formulario = (props: formsProps) => {
         []
     );
 
-    const renderPratos = () => {
+    const renderPratos = (cardapioIndex: number) => {
         return Array.from({ length: pratos }).map((_, index) => (
             <Grid container spacing={2} key={index}>
                 <Grid item xs={6} className={styles.formGroup}>
                     <TextField
-                        name={`pratosInfo.${index}.custo`}
+                        name={`cardapios.${cardapioIndex}.pratosInfo.${index}.custo`}
                         label={`Custo do Prato ${index + 1}`}
                         variant='outlined'
                         margin='normal'
                         fullWidth
-                        value={custo[index] || ''}
-                        onChange={(e) => handleCustoChange(index, Number(e.target.value))}
-                        onBlur={(e) => handleCustoChange(index, Number(e.target.value))}
+                        value={cardapios[cardapioIndex]?.pratosInfo[index]?.custo || ''}
+                        onChange={(e) => handleCustoChange(cardapioIndex, index, Number(e.target.value))}
+                        onBlur={(e) => handleCustoChange(cardapioIndex, index, Number(e.target.value))}
                     />
                 </Grid>
                 <Grid item xs={6} className={styles.formGroup}>
                     <TextField
-                        name={`pratosInfo.${index}.lucro`}
+                        name={`cardapios.${cardapioIndex}.pratosInfo.${index}.lucro`}
                         label={`Lucro do Prato ${index + 1}`}
                         variant='outlined'
                         margin='normal'
                         fullWidth
-                        value={lucro[index]}
-                        onChange={(e) => handleLucroChange(index, Number(e.target.value))}
-                        onBlur={(e) => handleLucroChange(index, Number(e.target.value))}
+                        value={cardapios[cardapioIndex]?.pratosInfo[index]?.lucro || ''}
+                        onChange={(e) => handleLucroChange(cardapioIndex, index, Number(e.target.value))}
+                        onBlur={(e) => handleLucroChange(cardapioIndex, index, Number(e.target.value))}
                     />
                 </Grid>
             </Grid>
         ));
     };
 
+    const addCardapio = () => {
+        setCardapios([
+            ...cardapios,
+            {
+                pratos: 0,
+                dias: 0,
+                orcamento: 0,
+                pratosInfo: [],
+            },
+        ]);
+    };
+
+    const formCardapio =
+        <Formik
+            initialValues={{ pratos, dias, orcamento, pratosInfo: custo.map((c, index) => ({ custo: c, lucro: lucro[index] })) }}
+            onSubmit={() => { }}
+        >
+
+            <Form className={styles.formContainer}>
+                {cardapios.map((cardapio, index) => (
+                    <div key={index}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={3} className={styles.formGroup}>
+                                <TextField
+                                    name={`cardapios.${index}.dias`}
+                                    label='Nº de dias'
+                                    variant='outlined'
+                                    margin='normal'
+                                    fullWidth
+                                    value={cardapio.dias}
+                                    onChange={(e) => {
+                                        const newCardapios = [...cardapios];
+                                        newCardapios[index].dias = Number(e.target.value);
+                                        setDias(newCardapios[index].dias);
+                                        setCardapios(newCardapios);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={3} className={styles.formGroup}>
+                                <TextField
+                                    name={`cardapios.${index}.pratos`}
+                                    label='Nº de Pratos'
+                                    variant='outlined'
+                                    margin='normal'
+                                    value={cardapio.pratos}
+                                    fullWidth
+                                    onChange={(e) => {
+                                        const newCardapios = [...cardapios];
+                                        newCardapios[index].pratos = Number(e.target.value);
+                                        setPratos(newCardapios[index].pratos);
+                                        verificaNumeroPratos(e.target.value);
+                                        setCardapios(newCardapios);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={3} className={styles.formGroup}>
+                                <TextField
+                                    name={`cardapios.${index}.orcamento`}
+                                    label='Orçamento'
+                                    variant='outlined'
+                                    margin='normal'
+                                    fullWidth
+                                    value={cardapio.orcamento}
+                                    onChange={(e) => {
+                                        const newCardapios = [...cardapios];
+                                        newCardapios[index].orcamento = Number(e.target.value);
+                                        setOrcamento(newCardapios[index].orcamento);
+                                        setCardapios(newCardapios);
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                        {renderPratos(index)} 
+                    </div>
+                ))}
+
+                <Button
+                    type='submit'
+                    onClick={() => {
+                        const cardapiosPreenchidos = cardapios.map((cardapio) => ({
+                            pratos: cardapio.pratos,
+                            dias: cardapio.dias,
+                            orcamento: cardapio.orcamento,
+                            pratosInfo: cardapio.pratosInfo.map(prato => ({
+                                custo: prato.custo,
+                                lucro: prato.lucro
+                            }))
+                        }));
+                        props.enviarReseultadosGuloso(cardapiosPreenchidos);
+                        abrirModalGuloso();
+                    }}>
+                    Enviar Guloso
+                </Button>
+
+                <Button
+                    type='submit'
+                    onClick={() => {
+                        const cardapiosPreenchidos = cardapios.map((cardapio) => ({
+                            pratos: cardapio.pratos,
+                            dias: cardapio.dias,
+                            orcamento: cardapio.orcamento,
+                            pratosInfo: cardapio.pratosInfo.map(prato => ({
+                                custo: prato.custo,
+                                lucro: prato.lucro
+                            }))
+                        }));
+                        props.enviarReseultadosDinamico(cardapiosPreenchidos);
+                        abrirModalDinamico();
+                    }}>
+                    Enviar Dinamico
+                </Button>
+            </Form>
+        </Formik>
 
     return (
         <>
-            <Formik
-                initialValues={{ pratos, dias, orcamento, pratosInfo: custo.map((c, index) => ({ custo: c, lucro: lucro[index] })) }}
-                onSubmit={() => { }}
+            <Button
+                onClick={addCardapio}
             >
+                Adicionar Cardápio
+            </Button>
 
-                <Form className={styles.formContainer}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={3} className={styles.formGroup}>
-                            <TextField
-                                name='dias'
-                                label='Nº de dias'
-                                variant='outlined'
-                                margin='normal'
-                                fullWidth
-                                onChange={(e) => setDias(Number(e.target.value))}
-                            />
-                        </Grid>
-                        <Grid item xs={3} className={styles.formGroup}>
-                            <TextField
-                                name='pratos'
-                                label='Nº de Pratos'
-                                variant='outlined'
-                                margin='normal'
-                                value={pratos}
-                                fullWidth
-                                onChange={(e) => { setPratos(Number(e.target.value)); verificaNumeroPratos(e.target.value) }}
-                            />
-                        </Grid>
-                        <Grid item xs={3} className={styles.formGroup}>
-                            <TextField
-                                name='orcamento'
-                                label='Orçamento'
-                                variant='outlined'
-                                margin='normal'
-                                fullWidth
-                                onChange={(e) => setOrcamento(Number(e.target.value))}
-                            />
-                        </Grid>
-                    </Grid>
-                    {renderPratos()}
-
-                    <Button
-                        type='submit'
-                        onClick={() => {
-                            props.enviarReseultadosGuloso({
-                                pratos,
-                                dias,
-                                orcamento,
-                                custo,
-                                lucro
-                            });
-                            abrirModalGuloso();
-                        }}>
-                        Enviar Guloso
-                    </Button>
-
-                    <Button
-                        type='submit'
-                        onClick={() => {
-                            props.enviarReseultadosDinamico({
-                                pratos,
-                                dias,
-                                orcamento,
-                                custo,
-                                lucro
-                            });
-                            abrirModalDinamico();
-                        }}>
-                        Enviar Dinamico
-                    </Button>
-
-
-                </Form>
-
-            </Formik>
+            {formCardapio}
 
             {modalAberto && (
                 <ModalResultado
