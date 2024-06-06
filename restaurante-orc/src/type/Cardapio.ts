@@ -3,6 +3,7 @@ export type Cardapio = {
     dias: number;
     orcamento: number;
     pratosInfo:{
+        id: number;
         custo: number;
         lucro: number;
     }[]

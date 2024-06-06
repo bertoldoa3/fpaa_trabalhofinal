@@ -17,6 +17,7 @@ export type formsProps = {
 export const Formulario = (props: formsProps) => {
     const [modalAberto, setModalAberto] = useState(false);
     const [cardapios, setCardapios] = useState<Cardapio[]>([]);
+    const [usedIds, setUsedIds] = useState<Set<number>>(new Set());
 
     const fecharModalGuloso = () => {
         setModalAberto(false);
@@ -34,10 +35,19 @@ export const Formulario = (props: formsProps) => {
         setModalAberto(true);
     }
 
+    const generateUniqueId = (): number => {
+        let newId;
+        do {
+            newId = Math.floor(Math.random() * 100000);
+        } while (usedIds.has(newId));
+        usedIds.add(newId);
+        return newId;
+    }
+
     const handleCustoChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
         const newCardapios = [...cardapios];
         if (!newCardapios[cardapioIndex].pratosInfo[pratoIndex]) {
-            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { custo: 0, lucro: 0 };
+            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
         }
         newCardapios[cardapioIndex].pratosInfo[pratoIndex].custo = value;
         setCardapios(newCardapios);
@@ -46,7 +56,7 @@ export const Formulario = (props: formsProps) => {
     const handleLucroChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
         const newCardapios = [...cardapios];
         if (!newCardapios[cardapioIndex].pratosInfo[pratoIndex]) {
-            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { custo: 0, lucro: 0 };
+            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
         }
         newCardapios[cardapioIndex].pratosInfo[pratoIndex].lucro = value;
         setCardapios(newCardapios);
@@ -172,6 +182,7 @@ export const Formulario = (props: formsProps) => {
                             dias: cardapio.dias,
                             orcamento: cardapio.orcamento,
                             pratosInfo: cardapio.pratosInfo.map(prato => ({
+                                id: prato.id,
                                 custo: prato.custo,
                                 lucro: prato.lucro
                             }))
@@ -190,6 +201,7 @@ export const Formulario = (props: formsProps) => {
                             dias: cardapio.dias,
                             orcamento: cardapio.orcamento,
                             pratosInfo: cardapio.pratosInfo.map(prato => ({
+                                id: prato.id,
                                 custo: prato.custo,
                                 lucro: prato.lucro
                             }))
