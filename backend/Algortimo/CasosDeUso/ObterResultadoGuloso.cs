@@ -63,6 +63,14 @@ namespace Algoritimos.CasosDdeUso
                     }
                 }
 
+                bool excedeOrcamento = resultado.All(prato => prato == 0);
+
+                if (excedeOrcamento)
+                {
+                    lucroTotal = 0;
+                }
+
+
                 cardapioOutput.Add(new CardapioOutput
                 {
                     Resultado = resultado,
