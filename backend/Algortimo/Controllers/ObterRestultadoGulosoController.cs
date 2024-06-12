@@ -9,7 +9,7 @@ namespace Algoritimos.Controllers
     public class ObterResultadoGulosoController : ControllerBase
     {
         [HttpPost]
-        public IActionResult Post(List<Cardapio> cardapio)
+        public IActionResult Post(List<CasosDdeUso.Cardapio> cardapio)
         {
             var cardapioOutput = ObterResultadoGuloso.Executar(cardapio);
             return Ok(cardapioOutput);

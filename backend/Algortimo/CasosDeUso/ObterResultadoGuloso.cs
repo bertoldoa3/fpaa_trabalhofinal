@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Algoritimos.Models;
 
 namespace Algoritimos.CasosDdeUso
@@ -18,12 +19,14 @@ namespace Algoritimos.CasosDdeUso
                 var pratos = entrada.PratosInformacoes.Pratos;
 
                 var resultado = new int[k];
-                double lucroTotal = 0;
+                double lucroTotal = 0.0;
                 int orcamentoRestante = m;
+
+                var tabela = new List<TabelaPrato>();
 
                 for (int dia = 0; dia < k; dia++)
                 {
-                    double maxLucroDia = 0;
+                    double maxLucroDia = 0.0;
                     int pratoEscolhido = -1;
 
                     foreach (var prato in pratos)
@@ -48,6 +51,14 @@ namespace Algoritimos.CasosDdeUso
                                 maxLucroDia = lucroPrato;
                                 pratoEscolhido = prato.Id;
                             }
+
+                            tabela.Add(new TabelaPrato
+                            {
+                                Dia = dia + 1,
+                                PratoId = prato.Id,
+                                Custo = prato.Custo,
+                                Lucro = lucroPrato
+                            });
                         }
                     }
 
@@ -70,29 +81,39 @@ namespace Algoritimos.CasosDdeUso
                     lucroTotal = 0;
                 }
 
-
                 cardapioOutput.Add(new CardapioOutput
                 {
                     Resultado = resultado,
-                    Lucro = lucroTotal
+                    Lucro = Math.Round(lucroTotal, 1),
+                    Tabela = tabela
                 });
             }
 
             return cardapioOutput;
-
         }
     }
 
-    public class CardapioInput
+    public class Cardapio
     {
         public int NumeroPratos { get; set; }
         public int NumeroDias { get; set; }
         public int Orcamento { get; set; }
         public PratosInfor PratosInformacoes { get; set; }
     }
+
     public class CardapioOutput
     {
         public int[] Resultado { get; set; }
+        public double Lucro { get; set; }
+        public List<TabelaPrato> Tabela { get; set; }
+    }
+
+
+    public class TabelaPrato
+    {
+        public int Dia { get; set; }
+        public int PratoId { get; set; }
+        public int Custo { get; set; }
         public double Lucro { get; set; }
     }
 }
