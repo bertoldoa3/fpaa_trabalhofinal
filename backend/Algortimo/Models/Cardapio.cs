@@ -5,6 +5,6 @@ namespace Algoritimos.Models
         public int NumeroPratos { get; set; }
         public int NumeroDias { get; set; }
         public int Orcamento { get; set; }
-        public PratosInfor PratosInformacoes { get; set; }
+        public PratosInformacoes PratosInformacoes { get; set; }
     }
 }

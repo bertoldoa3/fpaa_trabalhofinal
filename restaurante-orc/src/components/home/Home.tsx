@@ -3,29 +3,33 @@ import Cabecalho from '../cabecalho/Cabecalho'
 import { Formulario } from '../formulario/Formulario'
 import { Cardapio } from '../../type/Cardapio'
 import { DadosSaida } from '../../type/DadosSaida'
+import axios from 'axios'
 
 
 const Home = () => {
-    const [dadosEnviar, setDadosEnviar] = useState<Cardapio[] | null>(null)
-    const [dadosReceberGuloso, setDadosReceberGuloso] = useState<DadosSaida | null>(null)
-    const [dadosReceberDinamico, setDadosReceberDinamico] = useState<DadosSaida | null>(null)
+    const [dadosReceberGuloso, setDadosReceberGuloso] = useState<DadosSaida | null>(null);
+    const [dadosReceberDinamico, setDadosReceberDinamico] = useState<DadosSaida | null>(null);
 
+    
 
     const enviarDadosGuloso = async (dados: Cardapio[]) => {
-        console.log(dados)
-    }
+        try {
+            alert (dados)
+            const response = await axios.post('http://localhost:5000/api/ObterResultadoGuloso', dados);
+            setDadosReceberGuloso(response.data);
+        } catch (error) {
+            console.error('Erro ao enviar dados (Guloso):', error);
+        }
+    };
 
     const enviarDadosDinamico = async (dados: Cardapio[]) => {
-        console.log(dados)
-    }
-
-    const receberResultadosGuloso = () => {
-
-    }
-
-    const receberResultadosDinamico = () => {
-
-    }
+        try {
+            const response = await axios.post('/api/ObterResultadoDinamico', dados); // Assumindo que há um endpoint para o algoritmo dinâmico
+            setDadosReceberDinamico(response.data);
+        } catch (error) {
+            console.error('Erro ao enviar dados (Dinâmico):', error);
+        }
+    };
 
     return (
         <div>

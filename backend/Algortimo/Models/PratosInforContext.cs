@@ -8,7 +8,7 @@ namespace Algoritimos.Models
         {
         }
 
-        public DbSet<PratosInfor> PratosInfor { get; set; } = null;
+        public DbSet<PratosInformacoes> PratosInfor { get; set; } = null;
         public object PratosInforOutput { get; internal set; }
     }
 }

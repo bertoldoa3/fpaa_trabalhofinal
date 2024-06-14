@@ -1,6 +1,6 @@
 namespace Algoritimos.Models
 {
-    public class PratosInfor
+    public class PratosInformacoes
     {
         public List<Pratos> Pratos { get; set; }
     }

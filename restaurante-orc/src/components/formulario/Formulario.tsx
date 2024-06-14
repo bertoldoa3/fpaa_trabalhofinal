@@ -35,65 +35,66 @@ export const Formulario = (props: formsProps) => {
         setModalAberto(true);
     }
 
+    // Variável para armazenar o próximo ID disponível
+    let nextId = 1;
+
+    // Função para gerar um ID único sequencial
     const generateUniqueId = (): number => {
-        let newId;
-        do {
-            newId = Math.floor(Math.random() * 100000);
-        } while (usedIds.has(newId));
-        usedIds.add(newId);
-        return newId;
-    }
+        return nextId++;
+    };
 
     const handleCustoChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
         const newCardapios = [...cardapios];
-        if (!newCardapios[cardapioIndex].pratosInfo[pratoIndex]) {
-            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
+        // Verifica se pratosInformacoes[pratoIndex] está definido
+        if (!newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex]) {
+            newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
         }
-        newCardapios[cardapioIndex].pratosInfo[pratoIndex].custo = value;
+        newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex].custo = value;
         setCardapios(newCardapios);
     };
 
     const handleLucroChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
         const newCardapios = [...cardapios];
-        if (!newCardapios[cardapioIndex].pratosInfo[pratoIndex]) {
-            newCardapios[cardapioIndex].pratosInfo[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
+        // Verifica se pratosInformacoes[pratoIndex] está definido
+        if (!newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex]) {
+            newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
         }
-        newCardapios[cardapioIndex].pratosInfo[pratoIndex].lucro = value;
+        newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex].lucro = value;
         setCardapios(newCardapios);
     };
 
     const verificaNumeroPratos = useCallback(
         debounce((value, cardapioIndex) => {
             const newCardapios = [...cardapios];
-            newCardapios[cardapioIndex].pratos = value;
+            newCardapios[cardapioIndex].numeroPratos = value;
             setCardapios(newCardapios);
         }, 300),
         [cardapios]
     );
 
     const renderPratos = (cardapioIndex: number) => {
-        return Array.from({ length: cardapios[cardapioIndex].pratos }).map((_, index) => (
+        return Array.from({ length: cardapios[cardapioIndex].numeroPratos }).map((_, index) => (
             <Grid container spacing={2} key={index}>
                 <Grid item xs={6} className={styles.formGroup}>
                     <TextField
-                        name={`cardapios.${cardapioIndex}.pratosInfo.${index}.custo`}
+                        name={`cardapios.${cardapioIndex}.pratosInformacoes.pratos.${index}.custo`}
                         label={`Custo do Prato ${index + 1}`}
                         variant='outlined'
                         margin='normal'
                         fullWidth
-                        value={cardapios[cardapioIndex]?.pratosInfo[index]?.custo || ''}
+                        value={cardapios[cardapioIndex]?.pratosInformacoes.pratos[index]?.custo || ''}
                         onChange={(e) => handleCustoChange(cardapioIndex, index, Number(e.target.value))}
                         onBlur={(e) => handleCustoChange(cardapioIndex, index, Number(e.target.value))}
                     />
                 </Grid>
                 <Grid item xs={6} className={styles.formGroup}>
                     <TextField
-                        name={`cardapios.${cardapioIndex}.pratosInfo.${index}.lucro`}
+                        name={`cardapios.${cardapioIndex}.pratosInformacoes.pratos.${index}.lucro`}
                         label={`Lucro do Prato ${index + 1}`}
                         variant='outlined'
                         margin='normal'
                         fullWidth
-                        value={cardapios[cardapioIndex]?.pratosInfo[index]?.lucro || ''}
+                        value={cardapios[cardapioIndex]?.pratosInformacoes.pratos[index]?.lucro || ''}
                         onChange={(e) => handleLucroChange(cardapioIndex, index, Number(e.target.value))}
                         onBlur={(e) => handleLucroChange(cardapioIndex, index, Number(e.target.value))}
                     />
@@ -101,17 +102,8 @@ export const Formulario = (props: formsProps) => {
             </Grid>
         ));
     };
-
     const addCardapio = () => {
-        setCardapios([
-            ...cardapios,
-            {
-                pratos: 0,
-                dias: 0,
-                orcamento: 0,
-                pratosInfo: [],
-            },
-        ]);
+        setCardapios([...cardapios, { numeroPratos: 0, numeroDias: 0, orcamento: 0, pratosInformacoes: { pratos: [] } }]);
     };
 
     const formCardapio =
@@ -131,10 +123,10 @@ export const Formulario = (props: formsProps) => {
                                     variant='outlined'
                                     margin='normal'
                                     fullWidth
-                                    value={cardapio.dias}
+                                    value={cardapio.numeroDias}
                                     onChange={(e) => {
                                         const newCardapios = [...cardapios];
-                                        newCardapios[index].dias = Number(e.target.value);
+                                        newCardapios[index].numeroDias = Number(e.target.value);
                                         setCardapios(newCardapios);
                                     }}
                                 />
@@ -145,11 +137,11 @@ export const Formulario = (props: formsProps) => {
                                     label='Nº de Pratos'
                                     variant='outlined'
                                     margin='normal'
-                                    value={cardapio.pratos}
+                                    value={cardapio.numeroPratos}
                                     fullWidth
                                     onChange={(e) => {
                                         const newCardapios = [...cardapios];
-                                        newCardapios[index].pratos = Number(e.target.value);
+                                        newCardapios[index].numeroPratos = Number(e.target.value);
                                         verificaNumeroPratos(e.target.value, index);
                                     }}
                                 />
@@ -170,7 +162,7 @@ export const Formulario = (props: formsProps) => {
                                 />
                             </Grid>
                         </Grid>
-                        {renderPratos(index)} 
+                        {renderPratos(index)}
                     </div>
                 ))}
 
@@ -178,14 +170,16 @@ export const Formulario = (props: formsProps) => {
                     type='submit'
                     onClick={() => {
                         const cardapiosPreenchidos = cardapios.map((cardapio) => ({
-                            pratos: cardapio.pratos,
-                            dias: cardapio.dias,
+                            numeroPratos: cardapio.numeroPratos,
+                            numeroDias: cardapio.numeroDias,
                             orcamento: cardapio.orcamento,
-                            pratosInfo: cardapio.pratosInfo.map(prato => ({
-                                id: prato.id,
-                                custo: prato.custo,
-                                lucro: prato.lucro
-                            }))
+                            pratosInformacoes: {
+                                pratos: cardapio.pratosInformacoes.pratos.map(prato => ({
+                                    id: prato.id,
+                                    custo: prato.custo,
+                                    lucro: prato.lucro
+                                }))
+                            }
                         }));
                         props.enviarReseultadosGuloso(cardapiosPreenchidos);
                         abrirModalGuloso();
@@ -197,14 +191,16 @@ export const Formulario = (props: formsProps) => {
                     type='submit'
                     onClick={() => {
                         const cardapiosPreenchidos = cardapios.map((cardapio) => ({
-                            pratos: cardapio.pratos,
-                            dias: cardapio.dias,
+                            numeroPratos: cardapio.numeroPratos,
+                            numeroDias: cardapio.numeroDias,
                             orcamento: cardapio.orcamento,
-                            pratosInfo: cardapio.pratosInfo.map(prato => ({
-                                id: prato.id,
-                                custo: prato.custo,
-                                lucro: prato.lucro
-                            }))
+                            pratosInformacoes: {
+                                pratos: cardapio.pratosInformacoes.pratos.map(prato => ({
+                                    id: prato.id,
+                                    custo: prato.custo,
+                                    lucro: prato.lucro
+                                }))
+                            }
                         }));
                         props.enviarReseultadosDinamico(cardapiosPreenchidos);
                         abrirModalDinamico();
