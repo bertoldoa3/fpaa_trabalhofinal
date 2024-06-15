@@ -3,32 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using Algoritimos.Models;
 
-namespace Algoritimos.CasosDdeUso
+namespace Algoritimos.CasosDeUso
 {
     public class ObterResultadoGuloso
     {
-        public static List<CardapioOutput> Executar(List<Cardapio> cardapio)
+        public static List<CardapioOutput> Executar(List<Cardapio> cardapios)
         {
-            var cardapioOutput = new List<CardapioOutput>();
+            var cardapioOutputs = new List<CardapioOutput>();
 
-            foreach (var entrada in cardapio)
+            foreach (var cardapio in cardapios)
             {
-                int k = entrada.NumeroDias;
-                int n = entrada.NumeroPratos;
-                int m = entrada.Orcamento;
-                var pratos = entrada.PratosInformacoes.Pratos;
+                int k = cardapio.NumeroDias;
+                int n = cardapio.NumeroPratos;
+                int m = cardapio.Orcamento;
+                var pratos = cardapio.PratosInformacoes.Pratos;
 
                 var resultado = new int[k];
                 double lucroTotal = 0.0;
                 int orcamentoRestante = m;
 
+
+                //Tabela de verificação de cada prato
                 var tabela = new List<TabelaPrato>();
 
+                //For a qual fara a verificação de cada prato pelo dia
                 for (int dia = 0; dia < k; dia++)
                 {
                     double maxLucroDia = 0.0;
                     int pratoEscolhido = -1;
 
+                    //For a qual fara a verificação de cada prato e caputarar seu lucro
                     foreach (var prato in pratos)
                     {
                         if (prato.Custo <= orcamentoRestante)
@@ -52,6 +56,7 @@ namespace Algoritimos.CasosDdeUso
                                 pratoEscolhido = prato.Id;
                             }
 
+                            //Capturando para a tabela
                             tabela.Add(new TabelaPrato
                             {
                                 Dia = dia + 1,
@@ -62,10 +67,14 @@ namespace Algoritimos.CasosDdeUso
                         }
                     }
 
+                    //Verifica se o prato foi escolhido
                     if (pratoEscolhido != -1)
                     {
+                        //prato escolhido no dia
                         resultado[dia] = pratoEscolhido;
+                        //Orcamento restante
                         orcamentoRestante -= pratos[pratoEscolhido - 1].Custo;
+                        //Lucro total
                         lucroTotal += maxLucroDia;
                     }
                     else
@@ -74,22 +83,32 @@ namespace Algoritimos.CasosDdeUso
                     }
                 }
 
+                //Verifica se o orcamento foi excedido
                 bool excedeOrcamento = resultado.All(prato => prato == 0);
 
                 if (excedeOrcamento)
                 {
-                    lucroTotal = 0;
+                    var cardapioOutput = new CardapioOutput
+                    {
+                        Resultado = [0],
+                        Lucro = 0.0,
+                        Tabela = tabela
+                    };
+                    cardapioOutputs.Add(cardapioOutput);
                 }
-
-                cardapioOutput.Add(new CardapioOutput
+                else
                 {
-                    Resultado = resultado,
-                    Lucro = Math.Round(lucroTotal, 1),
-                    Tabela = tabela
-                });
+                    var cardapioOutput = new CardapioOutput
+                    {
+                        Resultado = resultado,
+                        Lucro = Math.Round(lucroTotal, 2),
+                        Tabela = tabela
+                    };
+                    cardapioOutputs.Add(cardapioOutput);
+                }
             }
 
-            return cardapioOutput;
+            return cardapioOutputs;
         }
     }
 
@@ -101,13 +120,13 @@ namespace Algoritimos.CasosDdeUso
         public PratosInformacoes PratosInformacoes { get; set; }
     }
 
+
     public class CardapioOutput
     {
         public int[] Resultado { get; set; }
         public double Lucro { get; set; }
         public List<TabelaPrato> Tabela { get; set; }
     }
-
 
     public class TabelaPrato
     {

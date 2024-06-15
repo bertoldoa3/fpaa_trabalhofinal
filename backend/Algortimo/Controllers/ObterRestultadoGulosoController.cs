@@ -1,4 +1,4 @@
-using Algoritimos.CasosDdeUso;
+using Algoritimos.CasosDeUso;
 using Algoritimos.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,7 @@ namespace Algoritimos.Controllers
             _logger = logger;
         }
         [HttpPost]
-        public IActionResult Post(List<CasosDdeUso.Cardapio> cardapio)
+        public IActionResult Post(List<CasosDeUso.Cardapio> cardapio)
         {
             if (cardapio == null)
             {
