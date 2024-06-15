@@ -3,26 +3,29 @@ import { DadosSaida } from '../../type/DadosSaida'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 
 export type ModalResultadoProps = {
-    dadosSaida: DadosSaida | null
+    dadosSaida: DadosSaida[] | null
     onClose: () => void
 }
 
 const ModalResultado = (props: ModalResultadoProps) => {
     return (
         <Dialog open={true} onClose={props.onClose}>
-            <DialogTitle>Resultado</DialogTitle>
+            <DialogTitle><h2>Resultado</h2></DialogTitle>
             <DialogContent>
                 <div>
-                    {props.dadosSaida?.lucro.map((resultado, index) => (
-                        <p key={index}>{resultado}</p>
-                    ))}
-                    {props.dadosSaida?.pratos.map((resultado, index) => (
-                        <div>
-                            {' '}
-                            <p key={index}>{resultado}</p>
-                            {' '}
-                        </div>
-                    ))}
+                    {props.dadosSaida?.map((resultado, index) => {
+                        return (
+                            <div>
+                                <h3>Sequencia de pratos: </h3>
+                                <p key={index}>{resultado.resultado.map((e) =>
+                                        <span>{e}</span>
+                                    )}
+                                </p>
+                                <h3>Lucro: </h3>
+                                <p key={index}>{resultado.lucro}</p>
+                            </div>
+                        )
+                    })}
                 </div>
             </DialogContent>
             <DialogActions>

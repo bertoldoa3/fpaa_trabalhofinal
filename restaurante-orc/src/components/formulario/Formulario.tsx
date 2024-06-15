@@ -9,15 +9,16 @@ import { DadosSaida } from '../../type/DadosSaida';
 
 export type formsProps = {
     enviarReseultadosGuloso: (dados: Cardapio[]) => void;
-    dadosRecebidosGuloso: DadosSaida | null;
+    dadosRecebidosGuloso: DadosSaida[] | null;
     enviarReseultadosDinamico: (dados: Cardapio[]) => void;
-    dadosRecebidosDinamico: DadosSaida | null;
+    dadosRecebidosDinamico: DadosSaida[] | null;
 }
 
 export const Formulario = (props: formsProps) => {
     const [modalAberto, setModalAberto] = useState(false);
     const [cardapios, setCardapios] = useState<Cardapio[]>([]);
     const [usedIds, setUsedIds] = useState<Set<number>>(new Set());
+    const [nextId, setNextId] = useState(1);
 
     const fecharModalGuloso = () => {
         setModalAberto(false);
@@ -35,12 +36,10 @@ export const Formulario = (props: formsProps) => {
         setModalAberto(true);
     }
 
-    // Variável para armazenar o próximo ID disponível
-    let nextId = 1;
-
     // Função para gerar um ID único sequencial
     const generateUniqueId = (): number => {
-        return nextId++;
+        setNextId(prevId => prevId + 1);
+        return nextId;
     };
 
     const handleCustoChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
@@ -227,12 +226,6 @@ export const Formulario = (props: formsProps) => {
                 />
             )}
 
-            {modalAberto && (
-                <ModalResultado
-                    dadosSaida={props.dadosRecebidosDinamico}
-                    onClose={fecharModalDinamico}
-                />
-            )}
         </>
     );
 }

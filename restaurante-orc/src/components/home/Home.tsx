@@ -7,15 +7,15 @@ import axios from 'axios'
 
 
 const Home = () => {
-    const [dadosReceberGuloso, setDadosReceberGuloso] = useState<DadosSaida | null>(null);
-    const [dadosReceberDinamico, setDadosReceberDinamico] = useState<DadosSaida | null>(null);
+    const [dadosReceberGuloso, setDadosReceberGuloso] = useState<DadosSaida[] | null>([]);
+    const [dadosReceberDinamico, setDadosReceberDinamico] = useState<DadosSaida[] | null>([]);
 
     
 
     const enviarDadosGuloso = async (dados: Cardapio[]) => {
         try {
-            alert (dados)
             const response = await axios.post('http://localhost:5000/api/ObterResultadoGuloso', dados);
+            console.log(response.data);
             setDadosReceberGuloso(response.data);
         } catch (error) {
             console.error('Erro ao enviar dados (Guloso):', error);
