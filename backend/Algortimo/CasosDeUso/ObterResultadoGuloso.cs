@@ -47,7 +47,7 @@ namespace Algoritimos.CasosDeUso
                             // Verifica se o prato foi cozinhado nos dois dias anteriores
                             if (dia > 1 && resultado[dia - 1] == prato.Id && resultado[dia - 2] == prato.Id)
                             {
-                                lucroPrato = 0;
+                                lucroPrato = 0.0;
                             }
 
                             if (lucroPrato > maxLucroDia)
@@ -84,7 +84,7 @@ namespace Algoritimos.CasosDeUso
                 }
 
                 //Verifica se o orcamento foi excedido
-                bool excedeOrcamento = resultado.All(prato => prato == 0);
+                bool excedeOrcamento = orcamentoRestante < pratos.Min(prato => prato.Custo);
 
                 if (excedeOrcamento)
                 {
@@ -95,13 +95,14 @@ namespace Algoritimos.CasosDeUso
                         Tabela = tabela
                     };
                     cardapioOutputs.Add(cardapioOutput);
+                    
                 }
                 else
                 {
                     var cardapioOutput = new CardapioOutput
                     {
                         Resultado = resultado,
-                        Lucro = Math.Round(lucroTotal, 2),
+                        Lucro = Math.Round(lucroTotal, 1),
                         Tabela = tabela
                     };
                     cardapioOutputs.Add(cardapioOutput);
@@ -111,15 +112,6 @@ namespace Algoritimos.CasosDeUso
             return cardapioOutputs;
         }
     }
-
-    public class Cardapio
-    {
-        public int NumeroPratos { get; set; }
-        public int NumeroDias { get; set; }
-        public int Orcamento { get; set; }
-        public PratosInformacoes PratosInformacoes { get; set; }
-    }
-
 
     public class CardapioOutput
     {
