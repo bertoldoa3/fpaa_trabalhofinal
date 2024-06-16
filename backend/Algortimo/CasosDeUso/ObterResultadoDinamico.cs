@@ -9,123 +9,135 @@ namespace Algoritimos.CasosDeUso
     {
         public static List<CardapioOutput> Executar(List<Cardapio> cardapios)
         {
-            var cardapioOutputs = new List<CardapioOutput>();
+            // Lista que irá armazenar os resultados para cada cardápio
+            var listaResultadosCardapio = new List<CardapioOutput>();
 
+            // Percorre cada cardápio na lista de cardápios
             foreach (var cardapio in cardapios)
             {
-                int k = cardapio.NumeroDias;
-                int n = cardapio.NumeroPratos;
-                int m = cardapio.Orcamento;
-                var pratos = cardapio.PratosInformacoes.Pratos;
+                int numeroDias = cardapio.NumeroDias;
+                int numeroPratos = cardapio.NumeroPratos;
+                int orcamento = cardapio.Orcamento;
+                var informacoesPratos = cardapio.PratosInformacoes.Pratos;
 
-                int[] costs = new int[n];
-                int[] profits = new int[n];
+                // Inicializa os arrays de custos e lucros para os pratos
+                int[] custos = new int[numeroPratos];
+                int[] lucros = new int[numeroPratos];
 
-                for (int i = 0; i < n; i++)
+                // Preenche os arrays de custos e lucros
+                for (int i = 0; i < numeroPratos; i++)
                 {
-                    costs[i] = pratos[i].Custo;
-                    profits[i] = (int)pratos[i].Lucro;
+                    custos[i] = informacoesPratos[i].Custo;
+                    lucros[i] = (int)informacoesPratos[i].Lucro;
                 }
 
                 // Caso especial: Se o número de pratos é menor do que o número de dias
-                if (k > n)
+                if (numeroDias > numeroPratos)
                 {
-                    cardapioOutputs.Add(new CardapioOutput
+                    // Adiciona um resultado vazio à lista de resultados
+                    listaResultadosCardapio.Add(new CardapioOutput
                     {
-                        Resultado = new int[k],
+                        Resultado = new int[numeroDias],
                         Lucro = 0.0,
                         Tabela = new List<TabelaPrato>()
                     });
                     continue;
                 }
 
-                // Matriz de DP: dp[day, budget] = (maxProfit, lastPlate, lastCount)
-                var dp = new (double, int, int)[k + 1, m + 1];
-                for (int day = 0; day <= k; day++)
+                // Matriz de Programação Dinâmica: dp[dia, orcamento] = (lucroMaximo, ultimoPrato, contadorUltimoPrato)
+                var matrizDP = new (double, int, int)[numeroDias + 1, orcamento + 1];
+                for (int dia = 0; dia <= numeroDias; dia++)
                 {
-                    for (int budget = 0; budget <= m; budget++)
+                    for (int valorOrcamento = 0; valorOrcamento <= orcamento; valorOrcamento++)
                     {
-                        dp[day, budget] = (0.0, -1, 0);
+                        matrizDP[dia, valorOrcamento] = (0.0, -1, 0);
                     }
                 }
 
-                for (int day = 1; day <= k; day++)
+                // Preenche a matriz de DP
+                for (int dia = 1; dia <= numeroDias; dia++)
                 {
-                    for (int budget = 0; budget <= m; budget++)
+                    for (int valorOrcamento = 0; valorOrcamento <= orcamento; valorOrcamento++)
                     {
                         // Se nenhum prato for cozido neste dia, continua com o melhor lucro do dia anterior
-                        dp[day, budget] = dp[day - 1, budget];
-                        for (int plate = 0; plate < n; plate++)
+                        matrizDP[dia, valorOrcamento] = matrizDP[dia - 1, valorOrcamento];
+                        for (int prato = 0; prato < numeroPratos; prato++)
                         {
-                            if (budget >= costs[plate])
+                            if (valorOrcamento >= custos[prato])
                             {
-                                double profit = profits[plate];
-                                var previous = dp[day - 1, budget - costs[plate]];
+                                double lucroAtual = lucros[prato];
+                                var estadoAnterior = matrizDP[dia - 1, valorOrcamento - custos[prato]];
 
-                                if (previous.Item2 == plate)
+                                // Ajusta o lucro se o prato for repetido
+                                if (estadoAnterior.Item2 == prato)
                                 {
-                                    if (previous.Item3 == 1)
+                                    if (estadoAnterior.Item3 == 1)
                                     {
-                                        profit *= 0.5;
+                                        lucroAtual *= 0.5; // 50% do lucro se for repetido uma vez
                                     }
-                                    else if (previous.Item3 >= 2)
+                                    else if (estadoAnterior.Item3 >= 2)
                                     {
-                                        profit = 0;
+                                        lucroAtual = 0; // Sem lucro adicional se repetido mais de uma vez
                                     }
                                 }
 
-                                var newProfit = previous.Item1 + profit;
-                                if (newProfit > dp[day, budget].Item1)
+                                // Calcula o novo lucro
+                                var novoLucro = estadoAnterior.Item1 + lucroAtual;
+                                if (novoLucro > matrizDP[dia, valorOrcamento].Item1)
                                 {
-                                    dp[day, budget] = (newProfit, plate, previous.Item2 == plate ? previous.Item3 + 1 : 1);
+                                    matrizDP[dia, valorOrcamento] = (novoLucro, prato, estadoAnterior.Item2 == prato ? estadoAnterior.Item3 + 1 : 1);
                                 }
                             }
                         }
                     }
                 }
 
-                double maxProfit = 0;
-                int bestBudget = 0;
+                // Encontra o lucro máximo e o orçamento correspondente
+                double lucroMaximo = 0;
+                int melhorOrcamento = 0;
 
-                for (int budget = 0; budget <= m; budget++)
+                for (int valorOrcamento = 0; valorOrcamento <= orcamento; valorOrcamento++)
                 {
-                    if (dp[k, budget].Item1 > maxProfit)
+                    if (matrizDP[numeroDias, valorOrcamento].Item1 > lucroMaximo)
                     {
-                        maxProfit = dp[k, budget].Item1;
-                        bestBudget = budget;
+                        lucroMaximo = matrizDP[numeroDias, valorOrcamento].Item1;
+                        melhorOrcamento = valorOrcamento;
                     }
                 }
 
-                var tabela = new List<TabelaPrato>();
-                int[] resultado = new int[k];
+                var tabelaPratos = new List<TabelaPrato>();
+                int[] resultadoDias = new int[numeroDias];
 
-                if (maxProfit > 0)
+                // Se houver lucro, constrói o resultado
+                if (lucroMaximo > 0)
                 {
-                    int currentBudget = bestBudget;
-                    for (int day = k; day >= 1; day--)
+                    int orcamentoAtual = melhorOrcamento;
+                    for (int dia = numeroDias; dia >= 1; dia--)
                     {
-                        var best = dp[day, currentBudget];
-                        resultado[day - 1] = best.Item2 + 1;
-                        tabela.Add(new TabelaPrato
+                        var melhorEstado = matrizDP[dia, orcamentoAtual];
+                        resultadoDias[dia - 1] = melhorEstado.Item2 + 1;
+                        tabelaPratos.Add(new TabelaPrato
                         {
-                            Dia = day,
-                            PratoId = best.Item2 + 1,
-                            Custo = costs[best.Item2],
-                            Lucro = Math.Round(profits[best.Item2], 1)
+                            Dia = dia,
+                            PratoId = melhorEstado.Item2 + 1,
+                            Custo = custos[melhorEstado.Item2],
+                            Lucro = Math.Round((double)lucros[melhorEstado.Item2], 1) // Conversão explícita para double
                         });
-                        currentBudget -= costs[best.Item2];
+                        orcamentoAtual -= custos[melhorEstado.Item2];
                     }
-                    tabela.Reverse();
+                    tabelaPratos.Reverse();
                 }
 
-                cardapioOutputs.Add(new CardapioOutput
+                // Adiciona o resultado à lista de resultados
+                listaResultadosCardapio.Add(new CardapioOutput
                 {
-                    Resultado = resultado,
-                    Lucro = Math.Round(maxProfit, 1),
-                    Tabela = tabela
+                    Resultado = resultadoDias,
+                    Lucro = Math.Round(lucroMaximo, 1),
+                    Tabela = tabelaPratos
                 });
             }
-             return cardapioOutputs;
+            // Retorna a lista de resultados dos cardápios
+            return listaResultadosCardapio;
         }
     }
 }
