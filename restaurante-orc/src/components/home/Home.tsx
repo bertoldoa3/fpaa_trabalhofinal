@@ -7,8 +7,7 @@ import axios from 'axios'
 
 
 const Home = () => {
-    const [dadosReceberGuloso, setDadosReceberGuloso] = useState<DadosSaida[] | null>([]);
-    const [dadosReceberDinamico, setDadosReceberDinamico] = useState<DadosSaida[] | null>([]);
+    const [dadosReceber, setDadosReceber] = useState<DadosSaida[] | null>([]);
 
     
 
@@ -16,7 +15,7 @@ const Home = () => {
         try {
             const response = await axios.post('http://localhost:5000/api/ObterResultadoGuloso', dados);
             console.log(response.data);
-            setDadosReceberGuloso(response.data);
+            setDadosReceber(response.data);
         } catch (error) {
             console.error('Erro ao enviar dados (Guloso):', error);
         }
@@ -24,8 +23,9 @@ const Home = () => {
 
     const enviarDadosDinamico = async (dados: Cardapio[]) => {
         try {
-            const response = await axios.post('/api/ObterResultadoDinamico', dados); // Assumindo que há um endpoint para o algoritmo dinâmico
-            setDadosReceberDinamico(response.data);
+            const response = await axios.post('http://localhost:5000/api/ObterResultadoDinamico', dados); 
+            console.log(response.data);
+            setDadosReceber(response.data);
         } catch (error) {
             console.error('Erro ao enviar dados (Dinâmico):', error);
         }
@@ -36,9 +36,8 @@ const Home = () => {
             <Cabecalho />
             <Formulario 
                 enviarReseultadosGuloso={enviarDadosGuloso}
-                dadosRecebidosGuloso={dadosReceberGuloso} 
-                enviarReseultadosDinamico={enviarDadosDinamico} 
-                dadosRecebidosDinamico={dadosReceberDinamico}            
+                dadosRecebidos={dadosReceber} 
+                enviarReseultadosDinamico={enviarDadosDinamico}           
             />
         </div>
     )

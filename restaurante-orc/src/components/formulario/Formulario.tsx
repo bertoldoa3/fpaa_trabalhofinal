@@ -9,9 +9,8 @@ import { DadosSaida } from '../../type/DadosSaida';
 
 export type formsProps = {
     enviarReseultadosGuloso: (dados: Cardapio[]) => void;
-    dadosRecebidosGuloso: DadosSaida[] | null;
+    dadosRecebidos: DadosSaida[] | null;
     enviarReseultadosDinamico: (dados: Cardapio[]) => void;
-    dadosRecebidosDinamico: DadosSaida[] | null;
 }
 
 export const Formulario = (props: formsProps) => {
@@ -27,15 +26,7 @@ export const Formulario = (props: formsProps) => {
     const abrirModalGuloso = () => {
         setModalAberto(true);
     }
-
-    const fecharModalDinamico = () => {
-        setModalAberto(false);
-    }
-
-    const abrirModalDinamico = () => {
-        setModalAberto(true);
-    }
-
+    
     // Função para gerar um ID único sequencial
     const generateUniqueId = (): number => {
         setNextId(prevId => prevId + 1);
@@ -202,7 +193,7 @@ export const Formulario = (props: formsProps) => {
                             }
                         }));
                         props.enviarReseultadosDinamico(cardapiosPreenchidos);
-                        abrirModalDinamico();
+                        abrirModalGuloso();
                     }}>
                     Enviar Dinamico
                 </Button>
@@ -221,7 +212,7 @@ export const Formulario = (props: formsProps) => {
 
             {modalAberto && (
                 <ModalResultado
-                    dadosSaida={props.dadosRecebidosGuloso}
+                    dadosSaida={props.dadosRecebidos}
                     onClose={fecharModalGuloso}
                 />
             )}
