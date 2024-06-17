@@ -35,6 +35,7 @@ export const Formulario = (props: formsProps) => {
 
     const handleCustoChange = (cardapioIndex: number, pratoIndex: number, value: number) => {
         const newCardapios = [...cardapios];
+        
         // Verifica se pratosInformacoes[pratoIndex] está definido
         if (!newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex]) {
             newCardapios[cardapioIndex].pratosInformacoes.pratos[pratoIndex] = { id: generateUniqueId(), custo: 0, lucro: 0 };
@@ -58,7 +59,7 @@ export const Formulario = (props: formsProps) => {
             const newCardapios = [...cardapios];
             newCardapios[cardapioIndex].numeroPratos = value;
             setCardapios(newCardapios);
-        }, 300),
+        }, 100),
         [cardapios]
     );
 

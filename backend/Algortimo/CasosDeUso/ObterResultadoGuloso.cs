@@ -22,59 +22,75 @@ namespace Algoritimos.CasosDeUso
                 double lucroTotal = 0.0;
                 int orcamentoRestante = m;
 
-
-                //Tabela de verificação de cada prato
+                // Tabela de verificação de cada prato
                 var tabela = new List<TabelaPrato>();
 
-                //For a qual fara a verificação de cada prato pelo dia
+                // Loop para verificar cada dia
                 for (int dia = 0; dia < k; dia++)
                 {
                     double maxLucroDia = 0.0;
                     int pratoEscolhido = -1;
 
-                    //For a qual fara a verificação de cada prato e caputarar seu lucro
-                    foreach (var prato in pratos)
+                    // No primeiro dia, escolhemos o prato de maior Lucro que ainda está dentro do orçamento
+                    if (dia == 0)
                     {
-                        if (prato.Custo <= orcamentoRestante)
+                        var pratoMaiorLucro = pratos
+                            .Where(p => p.Custo <= orcamentoRestante)
+                            .OrderByDescending(p => p.Lucro)
+                            .FirstOrDefault();
+
+                        if (pratoMaiorLucro != null)
                         {
-                            double lucroPrato = prato.Lucro;
+                            pratoEscolhido = pratoMaiorLucro.Id;
+                            maxLucroDia = pratoMaiorLucro.Lucro;
+                        }
+                    }
+                    else
+                    {
+                        // Loop para verificar cada prato e capturar seu lucro
+                        foreach (var prato in pratos)
+                        {
+                            if (prato.Custo <= orcamentoRestante)
+                            {
+                                double lucroPrato = prato.Lucro;
 
-                            // Verifica se o prato foi cozinhado no dia anterior
-                            if (dia > 0 && resultado[dia - 1] == prato.Id)
-                            {
-                                lucroPrato *= 0.5;
-                            }
-                            // Verifica se o prato foi cozinhado nos dois dias anteriores
-                            if (dia > 1 && resultado[dia - 1] == prato.Id && resultado[dia - 2] == prato.Id)
-                            {
-                                lucroPrato = 0.0;
-                            }
+                                // Verifica se o prato foi cozinhado no dia anterior
+                                if (dia > 0 && resultado[dia - 1] == prato.Id)
+                                {
+                                    lucroPrato *= 0.5;
+                                }
+                                // Verifica se o prato foi cozinhado nos dois dias anteriores
+                                if (dia > 1 && resultado[dia - 1] == prato.Id && resultado[dia - 2] == prato.Id)
+                                {
+                                    lucroPrato = 0.0;
+                                }
 
-                            if (lucroPrato > maxLucroDia)
-                            {
-                                maxLucroDia = lucroPrato;
-                                pratoEscolhido = prato.Id;
-                            }
+                                if (lucroPrato > maxLucroDia)
+                                {
+                                    maxLucroDia = lucroPrato;
+                                    pratoEscolhido = prato.Id;
+                                }
 
-                            //Capturando para a tabela
-                            tabela.Add(new TabelaPrato
-                            {
-                                Dia = dia + 1,
-                                PratoId = prato.Id,
-                                Custo = prato.Custo,
-                                Lucro = lucroPrato
-                            });
+                                // Capturando para a tabela
+                                tabela.Add(new TabelaPrato
+                                {
+                                    Dia = dia + 1,
+                                    PratoId = prato.Id,
+                                    Custo = prato.Custo,
+                                    Lucro = lucroPrato
+                                });
+                            }
                         }
                     }
 
-                    //Verifica se o prato foi escolhido
+                    // Verifica se o prato foi escolhido
                     if (pratoEscolhido != -1)
                     {
-                        //prato escolhido no dia
+                        // Prato escolhido no dia
                         resultado[dia] = pratoEscolhido;
-                        //Orcamento restante
+                        // Orçamento restante
                         orcamentoRestante -= pratos[pratoEscolhido - 1].Custo;
-                        //Lucro total
+                        // Lucro total
                         lucroTotal += maxLucroDia;
                     }
                     else
@@ -83,30 +99,18 @@ namespace Algoritimos.CasosDeUso
                     }
                 }
 
-                //Verifica se o orcamento foi excedido
+                // Verifica se o orçamento foi excedido
                 bool excedeOrcamento = orcamentoRestante < pratos.Min(prato => prato.Custo);
 
-                if (excedeOrcamento)
+
+                var cardapioOutput = new CardapioOutput
                 {
-                    var cardapioOutput = new CardapioOutput
-                    {
-                        Resultado = [0],
-                        Lucro = 0.0,
-                        Tabela = tabela
-                    };
-                    cardapioOutputs.Add(cardapioOutput);
-                    
-                }
-                else
-                {
-                    var cardapioOutput = new CardapioOutput
-                    {
-                        Resultado = resultado,
-                        Lucro = Math.Round(lucroTotal, 1),
-                        Tabela = tabela
-                    };
-                    cardapioOutputs.Add(cardapioOutput);
-                }
+                    Resultado = excedeOrcamento ? new int[] { 0 } : resultado,
+                    Lucro = excedeOrcamento ? 0.0 : Math.Round(lucroTotal, 1), // Arredondando para 1 casa decimal
+                    Tabela = tabela
+                };
+                
+                cardapioOutputs.Add(cardapioOutput);
             }
 
             return cardapioOutputs;
@@ -128,3 +132,4 @@ namespace Algoritimos.CasosDeUso
         public double Lucro { get; set; }
     }
 }
+

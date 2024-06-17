@@ -18,7 +18,7 @@ const ModalResultado = (props: ModalResultadoProps) => {
                             <div>
                                 <h3>Sequencia de pratos: </h3>
                                 <p key={index}>{resultado.resultado.map((e) =>
-                                        <span>{e}</span>
+                                        <span>{e == 0 ? '' : e}</span>
                                     )}
                                 </p>
                                 <h3>Lucro: </h3>
