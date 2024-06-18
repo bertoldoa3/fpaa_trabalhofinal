@@ -41,12 +41,38 @@
 
 ### Programação Dinâmica
 
-3. **Como esse problema pode ser modelado para o paradigma de programação dinâmica?**
+# Algoritmo de Planejamento de Cardápio
 
-4. **Discuta a subestrutura ótima e a sobreposição dos problemas.**
+Este projeto implementa um algoritmo para planejamento de cardápio ao longo de vários dias, maximizando o lucro e respeitando um orçamento definido.
 
-5. **Algum algoritmo clássico foi adaptado para resolver o problema? Se sim, qual foi ele?**
-   
+## Modelagem do Problema com Programação Dinâmica
+
+### 3. Como esse problema pode ser modelado para o paradigma de programação dinâmica?
+
+O problema pode ser modelado utilizando uma matriz de programação dinâmica `dp[dia][orcamento]`, onde:
+
+- `dia` varia de 0 a `k` (número de dias).
+- `orcamento` varia de 0 a `m` (orçamento disponível).
+
+Cada célula armazenará uma tupla `(lucroMaximo, ultimoPrato, contadorUltimoPrato)`:
+
+- `lucroMaximo`: O lucro máximo possível até o dia `i`.
+- `ultimoPrato`: O índice do último prato escolhido no dia `i`.
+- `contadorUltimoPrato`: O número de vezes consecutivas que o `ultimoPrato` foi escolhido até o dia `i`.
+
+dp[dia, orcamento] = (lucroMaximo, ultimoPrato, contadorUltimoPrato)
+
+## 4. Discuta a subestrutura ótima e a sobreposição dos problemas
+
+### Subestrutura Ótima
+A solução ótima do problema para `k` dias e orçamento `m` pode ser construída a partir das soluções ótimas dos subproblemas para `k-1` dias e orçamentos menores, cumprindo a condição de subestrutura ótima.
+
+### Sobreposição dos Problemas
+O cálculo do lucro máximo para um determinado dia e orçamento depende de subproblemas que podem ser reutilizados, caracterizando a sobreposição de problemas.
+
+## 5. Algum algoritmo clássico foi adaptado para resolver o problema? Se sim, qual foi ele?
+Sim, por meio da programação dinâmica aplicada no algoritimo da mochila, conseguimos aplicar para resolução deste algoritimo.
+
 
 ## Acesse a Documentação do Projeto
 - [Slides](#)

@@ -121,7 +121,8 @@ namespace Algoritimos.CasosDeUso
                             Dia = dia,
                             PratoId = melhorEstado.Item2 + 1,
                             Custo = custos[melhorEstado.Item2],
-                            Lucro = Math.Round((double)lucros[melhorEstado.Item2], 1) // Conversão explícita para double
+                            Lucro = Math.Round((double)lucros[melhorEstado.Item2], 1) // Ponto Flutuante
+
                         });
                         orcamentoAtual -= custos[melhorEstado.Item2];
                     }
@@ -132,7 +133,7 @@ namespace Algoritimos.CasosDeUso
                 listaResultadosCardapio.Add(new CardapioOutput
                 {
                     Resultado = resultadoDias,
-                    Lucro = Math.Round(lucroMaximo, 1),
+                    Lucro = Math.Round(lucroMaximo, 1), // Ponto Flutuante
                     Tabela = tabelaPratos
                 });
             }
